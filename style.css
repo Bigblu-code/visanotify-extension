@@ -1,0 +1,69 @@
+html {
+  background-color: black;
+  color: white;
+  min-height: 10em;
+  min-width: 20em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#head {
+  /* font-family: 'Courier New', Courier, monospace; */
+  text-align: center;
+}
+
+#visaType {
+  padding: 1px;
+}
+
+#visaOFCDate {
+  padding: 1px;
+}
+
+#visaInterviewDate {
+  padding: 1px;
+  
+}
+#noticeBox {
+  border: 1px solid #664d03;
+  background-color: #332701;
+  color: #ffda6a;
+  padding: 1px;
+  margin: 1px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+button {
+  padding: 7px;
+  margin: 9px;
+  border-radius: 6px;
+  background-color: #5865f2;
+  border: 0;
+  font-weight: bold;
+  color: white;
+}
+
+button:hover {
+  background-color: #7289da;
+}
+button:active {
+  background-color: #5e79dd;
+  scale: 0.9;
+}
+
+#thankyouBox{
+    border: 1px solid #0f5132;
+  background-color: #051b11;
+  color: #75b798;
+  padding: 1px;
+  margin: 9px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+#pageCheck{
+  cursor: pointer;
+}

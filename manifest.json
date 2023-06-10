@@ -1,0 +1,26 @@
+{
+  "name": "US Visa Slot Notifier",
+  "version": "1.13",
+  "description": "Notifies users on availability of US visa slots",
+  "permissions": ["tabs", "storage"],
+  "manifest_version": 3,
+  "background": {
+      "service_worker": "background.js"
+    },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "US Visa Slot Notifier"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://portal.ustraveldocs.com/*"],
+      "js": ["contentScript.js"]
+    }
+  ]
+  
+}

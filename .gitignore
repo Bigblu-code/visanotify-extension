@@ -1,0 +1,9 @@
+# ignore folders
+publish/
+web/
+
+# ignore publish folder and zip 
+Publish.zip
+
+# ignore webhook.json file containing the webhook secret
+webhook.json
