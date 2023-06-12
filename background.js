@@ -2,8 +2,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     const URL =
     "https://portal.ustraveldocs.com/*";
 
+    const webhookURL_Test             = ""
+    const webhookURL_F1_OFC           = ""
+    const webhookURL_F1_Consular      = ""
+    const webhookURL_other_OFC        = ""
+    const webhookURL_other_Consular   = ""
 
-    const webhookURL_Test = "";
+
+    // const webhookURL_Test = "";
     
     if (changeInfo.status === "complete" && tab.url.match(URL)) {
         
@@ -40,14 +46,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                 // send message for OFC
                 if(request.appointmentType_OFC === "Schedule OFC Appointment" && request.location_OFC){
 
-                  webhookURL_F1_OFC = ""
+                  // const webhookURL_F1_OFC           = ""
 
                     var message = messageContent(result.visaType, request.appointmentType_OFC, request.location_OFC, request.date_OFC)
                     // send message to discord
                     sendMessageToDiscord(message, webhookURL_F1_OFC);
                 }else if(request.appointmentType_consular === "Schedule Consular Appointment" && request.location_consular ){
 
-                  webhookURL_F1_Consular = ""
+                  // const webhookURL_F1_Consular      = ""
 
                     var message = messageContent(result.visaType, request.appointmentType_consular, request.location_consular, request.date_consular)
                     // send message to discord
@@ -63,18 +69,18 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
               // send message for OFC
               if(request.appointmentType_OFC === "Schedule OFC Appointment" && request.location_OFC){
 
-                webhookURL_other_OFC = ""
+                // webhookURL_other_OFC = ""
 
                   var message = messageContent(result.visaType, request.appointmentType_OFC, request.location_OFC, request.date_OFC)
                   // send message to discord
-                  sendMessageToDiscord(message, webhookURL_F1_OFC);
+                  sendMessageToDiscord(message, webhookURL_other_OFC);
               }else if(request.appointmentType_consular === "Schedule Consular Appointment" && request.location_consular ){
 
-                webhookURL_other_Consular = ""
+                // webhookURL_other_Consular = ""
 
                   var message = messageContent(result.visaType, request.appointmentType_consular, request.location_consular, request.date_consular)
                   // send message to discord
-                  sendMessageToDiscord(message, webhookURL_F1_Consular);
+                  sendMessageToDiscord(message, webhookURL_other_Consular);
               }else{
                   var message = messageContent(result.visaType, request.appointmentType_other, request.location_other, request.date_other)
                   // send message to discord
@@ -131,10 +137,11 @@ messageContent = (visaType, appointmentType, location, date) => {
               }
             ],
             "footer": {
-              "text": `US Visa Slot Notify | ${dataString !== "" ? "@F1" : "-X-"}`
+              "text": "US Visa Slot Notify | "
             }
           }
-        ]
+        ],
+        content: dateString !== "" ? " @F1 | Slots Found " : ""
       }
 
       return message;

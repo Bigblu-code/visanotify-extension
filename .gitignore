@@ -6,4 +6,4 @@ publish/
 Publish.zip
 
 # ignore webhook.json file containing the webhook secret
-webhook.json
+webhook.js
