@@ -67,9 +67,7 @@ window.onload = () => {
         location_OFC: OFC_city,
         date_OFC: datePicker,
       };
-    } else if (
-      appointmentType === "Schedule Consular Appointment"
-    ) {
+    } else if ( appointmentType === "Schedule Consular Appointment") {
       message = {
         appointmentType_consular: appointmentType,
         location_consular: OFC_city,

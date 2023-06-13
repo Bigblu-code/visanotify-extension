@@ -101,7 +101,7 @@ messageContent = (visaType, appointmentType, location, date) => {
     if(date){
 
         date.forEach(element => {
-            dateString += `${element.month} ${element.year} \nDate: ${ element.dates !== "" || element.dates !== null ? element.dates.join(", "): " X " } \n\n`
+            dateString += `${element.month} ${element.year} \nDate: ${ element.dates !== "" || element.dates !== null || element.dates ? element.dates.join(", "): " X " } \n\n`
         })
     }
 
@@ -141,7 +141,7 @@ messageContent = (visaType, appointmentType, location, date) => {
             }
           }
         ],
-        content: dateString !== "" ? " @F1 | Slots Found " : ""
+        content: dateString !== "" ? ` @${visaType} | Slots Found ` : ""
       }
 
       return message;
