@@ -44,14 +44,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             if(result.visaType === 'F-1'){
                 
                 // send message for OFC
-                if(request.appointmentType_OFC === "Schedule OFC Appointment" && request.location_OFC){
+                if(request.appointmentType_OFC === "OFC" && request.location_OFC){
 
                   // const webhookURL_F1_OFC           = ""
 
                     var message = messageContent(result.visaType, request.appointmentType_OFC, request.location_OFC, request.date_OFC)
                     // send message to discord
                     sendMessageToDiscord(message, webhookURL_F1_OFC);
-                }else if(request.appointmentType_consular === "Schedule Consular Appointment" && request.location_consular ){
+                }else if(request.appointmentType_consular === "CONSULAR" && request.location_consular ){
 
                   // const webhookURL_F1_Consular      = ""
 
@@ -67,14 +67,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             }else{
 
               // send message for OFC
-              if(request.appointmentType_OFC === "Schedule OFC Appointment" && request.location_OFC){
+              if(request.appointmentType_OFC === "OFC" && request.location_OFC){
 
                 // webhookURL_other_OFC = ""
 
                   var message = messageContent(result.visaType, request.appointmentType_OFC, request.location_OFC, request.date_OFC)
                   // send message to discord
                   sendMessageToDiscord(message, webhookURL_other_OFC);
-              }else if(request.appointmentType_consular === "Schedule Consular Appointment" && request.location_consular ){
+              }else if(request.appointmentType_consular === "CONSULAR" && request.location_consular ){
 
                 // webhookURL_other_Consular = ""
 

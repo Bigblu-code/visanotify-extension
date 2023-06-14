@@ -32,51 +32,82 @@ window.onload = () => {
 
   scrapContent = () => {
     // extraction visa type
-    var visaType = document.getElementsByClassName("stylizedLabel")[5];
-    if(visaType){
-    visaType = visaType.textContent;
-    }
+    // var visaType = document.getElementsByClassName("stylizedLabel")[5];
+    // if (visaType) {
+    //   visaType = visaType.textContent;
+    // }
 
     // extract appointment type
-    var appointmentType = document.getElementsByTagName("h3")[1];
-    if(appointmentType){
-    appointmentType = appointmentType.textContent;
+    // var appointmentType = document.getElementsByTagName("h3")[1];
+    // if(appointmentType){
+    // appointmentType = appointmentType.textContent;
+    // }
+
+    const visaTypes = ["B1", "B1/B2", "B2", "C1/D", "J-1", "J-2", "F-1", "F-2", "M-1", "M-2", "L-1 (Blanket)", "H-1B", "H-2A", "H-3B", "H-3", "H-4", "L-1 (Individual)", "L-2 (Blanket)", "L-2 (Individual)", "O-1", "O-2", "O-3", "P-1", "P-2", "P-3", "P-4", "Q-1", "R-1", "R-2"];
+    visaType = ""
+    let found = false;
+    let currentURL = window.location.toString().toLowerCase();
+    if (currentURL && currentURL.indexOf("/applicanthome") > -1) {
+      let text = document.querySelector("#dashboard-table")?.textContent;
+      if (text){
+        for (const vt of visaTypes) {
+          if (text.indexOf(vt) > -1) {
+            visaType = vt;
+            found = true;
+            break;
+          }
+        }
+      }
+    }
+    if (!found) {
+      const visaType = document.getElementsByClassName("stylizedLabel")[5];
+      if (visaType) {
+        visaType = visaType.textContent;
+      }
     }
 
-    // extract OFC_city Mumbai, Delhi, Kolkata, Hydrabad
-    var OFC_city = document.getElementsByTagName("select")[0];
-    if(OFC_city){
-    OFC_city = OFC_city.options[OFC_city.selectedIndex].textContent;
-  }
+    
+    // extract appointment Type
+    appointmentType = ""
+    if (currentURL && currentURL.indexOf("/scheduleappointment") > -1) {
+      console.log(currentURL)
+      let dashboard = document.getElementById("dashboard");
+      appointmentType = dashboard?.textContent?.indexOf("Consular") > -1 ? "CONSULAR" :  dashboard?.textContent?.indexOf("OFC") > -1 ? "OFC" : document.getElementsByTagName("h3")[1];
+    }
+
+    // extract city Mumbai, Delhi, Kolkata, Hydrabad
+    var city = document.getElementsByTagName("select")[0];
+    if (city) {
+      city = city.options[city.selectedIndex].textContent;
+    }
 
     // extract date
     var datePicker = document.getElementById("datepicker");
-    if(datePicker){
-
-    datePicker = dates(datePicker);
-  }
+    if (datePicker) {
+      datePicker = dates(datePicker);
+    }
 
     // send message to background.js
     if (visaType) {
       message = {
         visaType: visaType,
       };
-    }else if (appointmentType === "Schedule OFC Appointment") {
+    } else if (appointmentType === "OFC") {
       message = {
         appointmentType_OFC: appointmentType,
-        location_OFC: OFC_city,
+        location_OFC: city,
         date_OFC: datePicker,
       };
-    } else if ( appointmentType === "Schedule Consular Appointment") {
+    } else if (appointmentType === "CONSULAR") {
       message = {
         appointmentType_consular: appointmentType,
-        location_consular: OFC_city,
+        location_consular: city,
         date_consular: datePicker,
       };
     } else {
       message = {
         appointmentType_other: appointmentType,
-        location_other: OFC_city,
+        location_other: city,
         date_other: datePicker,
       };
     }
