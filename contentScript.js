@@ -43,13 +43,13 @@ window.onload = () => {
     // appointmentType = appointmentType.textContent;
     // }
 
-    const visaTypes = ["B1", "B1/B2", "B2", "C1/D", "J-1", "J-2", "F-1", "F-2", "M-1", "M-2", "L-1 (Blanket)", "H-1B", "H-2A", "H-3B", "H-3", "H-4", "L-1 (Individual)", "L-2 (Blanket)", "L-2 (Individual)", "O-1", "O-2", "O-3", "P-1", "P-2", "P-3", "P-4", "Q-1", "R-1", "R-2"];
-    visaType = ""
+    const visaTypes = ["B1/B2", "B1", "B2", "C1/D", "J-1", "J-2", "F-1", "F-2", "M-1", "M-2", "L-1 (Blanket)", "H-1B", "H-2A", "H-3B", "H-3", "H-4", "L-1 (Individual)", "L-2 (Blanket)", "L-2 (Individual)", "O-1", "O-2", "O-3", "P-1", "P-2", "P-3", "P-4", "Q-1", "R-1", "R-2"];
+    let visaType = ""
     let found = false;
     let currentURL = window.location.toString().toLowerCase();
     if (currentURL && currentURL.indexOf("/applicanthome") > -1) {
       let text = document.querySelector("#dashboard-table")?.textContent;
-      if (text){
+      if (text) {
         for (const vt of visaTypes) {
           if (text.indexOf(vt) > -1) {
             visaType = vt;
@@ -59,56 +59,60 @@ window.onload = () => {
         }
       }
     }
-    if (!found) {
-      const visaType = document.getElementsByClassName("stylizedLabel")[5];
-      if (visaType) {
-        visaType = visaType.textContent;
-      }
-    }
+    // if (!found) {
+    //   const visaType = document.getElementsByClassName("stylizedLabel")[5];
+    //   if (visaType) {
+    //     visaType = visaType.textContent;
+    //   }
+    // }
 
-    
-    // extract appointment Type
+
     appointmentType = ""
     if (currentURL && currentURL.indexOf("/scheduleappointment") > -1) {
       console.log(currentURL)
+
+      // extract appointment Type
       let dashboard = document.getElementById("dashboard");
-      appointmentType = dashboard?.textContent?.indexOf("Consular") > -1 ? "CONSULAR" :  dashboard?.textContent?.indexOf("OFC") > -1 ? "OFC" : document.getElementsByTagName("h3")[1];
-    }
+      appointmentType = dashboard?.textContent?.indexOf("Consular") > -1 ? "CONSULAR" : dashboard?.textContent?.indexOf("OFC") > -1 ? "OFC" : document.getElementsByTagName("h3")[1];
 
-    // extract city Mumbai, Delhi, Kolkata, Hydrabad
-    var city = document.getElementsByTagName("select")[0];
-    if (city) {
-      city = city.options[city.selectedIndex].textContent;
-    }
+      // extract city Mumbai, Delhi, Kolkata, Hydrabad
+      var city = document.getElementsByTagName("select")[0];
+      if (city) {
+        city = city.options[city.selectedIndex].textContent;
+      }
 
-    // extract date
-    var datePicker = document.getElementById("datepicker");
-    if (datePicker) {
-      datePicker = dates(datePicker);
+      // extract date
+      var datePicker = document.getElementById("datepicker");
+      if (datePicker) {
+        datePicker = dates(datePicker);
+      }
     }
 
     // send message to background.js
     if (visaType) {
       message = {
         visaType: visaType,
+        currentURL: currentURL
       };
     } else if (appointmentType === "OFC") {
       message = {
-        appointmentType_OFC: appointmentType,
+        appointmentType: appointmentType,
         location_OFC: city,
         date_OFC: datePicker,
+        currentURL: currentURL
+
       };
     } else if (appointmentType === "CONSULAR") {
       message = {
-        appointmentType_consular: appointmentType,
+        appointmentType: appointmentType,
         location_consular: city,
         date_consular: datePicker,
+        currentURL: currentURL
       };
     } else {
       message = {
-        appointmentType_other: appointmentType,
-        location_other: city,
-        date_other: datePicker,
+        error: "Error found Or visiting another route  (other than applicanthome or scheduled appointment)",
+        currentURL: currentURL
       };
     }
 
@@ -118,10 +122,11 @@ window.onload = () => {
 
   // listen for message from background.js
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+
     if (request.statusComplete) {
       console.log("status complete");
 
-      sendResponse({ statusComplete: scrapContent()});
+      sendResponse({ statusComplete: scrapContent() });
     }
   });
 };

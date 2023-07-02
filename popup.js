@@ -24,9 +24,8 @@ window.onload = async () => {
     chrome.storage.local.get(
       [
         "visaType",
-        "appointmentType_OFC",
+        "appointmentType",
         "location_OFC",
-        "appointmentType_consular",
         "location_consular",
         "date_OFC",
         "date_consular",
@@ -37,8 +36,9 @@ window.onload = async () => {
         document.getElementById("visaType").innerHTML = result.visaType;
         }
         if (
-          result.appointmentType_OFC !== undefined &&
-          result.location_OFC !== undefined
+          result.appointmentType !== undefined &&
+          result.location_OFC !== undefined && 
+          result.appointmentType == "OFC"
         ) {
           if (result.date_OFC !== null ) {
             c = result.date_OFC.length;
@@ -61,8 +61,9 @@ window.onload = async () => {
         }
 
         if (
-          result.appointmentType_consular !== undefined &&
-          result.location_consular !== undefined
+          result.appointmentType !== undefined &&
+          result.location_consular !== undefined &&
+          result.appointmentType == "CONSULAR"
         ) {
           if (result.date_consular !== null) {
             c = result.date_consular.length;
