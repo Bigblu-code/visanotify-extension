@@ -6,10 +6,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
     const webhookURL_F1_OFC           = ""
     const webhookURL_F1_Consular      = ""
-        
+    
     const webhookURL_other_OFC        = ""
     const webhookURL_other_Consular   = ""
-    
+
     const webhookURL_B1_OFC           = ""
     const webhookURL_B1_Consular      = ""
     const webhookURL_B2_OFC           = ""
@@ -43,6 +43,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       chrome.storage.local.set({ date: request.date_other })
 
       chrome.storage.local.set({ currentURL: request.currentURL })
+
+      // capture error
+      chrome.storage.local.set({errorMessage: request.errorMessage})
+      chrome.storage.local.set({errorResolveInfo: request.errorResolveInfo})
 
       console.info("Getting Request: ")
       console.log(request);
@@ -90,15 +94,17 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
           
           } else {
 
-            if (result.currentURL.indexOf("/scheduleappointment") > -1 && request.appointmentType_consular != "CONSULAR" && request.appointmentType_ofc !== "OFC") {
+            if ((result.currentURL.indexOf("/scheduleappointment") > -1 || request.currentURL.indexOf("/applicanthome") > -1 ) && request.appointmentType_consular != "CONSULAR" && request.appointmentType_ofc !== "OFC") {
               
               var message = errorMesssageContent(result.visaType, request.appointmentType_other, request.location, request.date, " Appointment Type and Visa Type Unknown ", result.currentURL)
+              var ErrorInfo = errorInfoMessageContent(result.visaType, result.appointmentType, result.errorMessage, result.errorResolveInfo)
               
             }
           }
 
           // send ERROR message to discord
           sendMessageToDiscord(message, webhookURL_errorLog);
+          sendMessageToDiscord(ErrorInfo, webhookURL_errorLog);
 
         }
         // VISA TYPE ==> OTHER
@@ -204,7 +210,7 @@ errorMesssageContent = (visaType, appointmentType, location, date, errorMessage,
       {
         "title": "Error",
         "description": "Here are the details for your appointment:",
-        "color": visaType ? appointmentType ? 16250624 : 9521408 : appointmentType ? 16250624 : 9521408,
+        "color": visaType ? appointmentType ? 14781450 : 13295672 : appointmentType ? 2527456 : 9311456,
         "timestamp": currentDate,
         "fields": [
           {
@@ -250,6 +256,50 @@ errorMesssageContent = (visaType, appointmentType, location, date, errorMessage,
 
 }
 
+errorInfoMessageContent = (visaType, appointmentType, errorMessage, errorResolveInfo) => {
+
+  
+  const currentDate = new Date().toISOString();
+
+  var message = {
+    "embeds": [
+      {
+        "title": "Error Correction Info",
+        "description": "Information to currect the above error",
+        "color": 3066993,
+        "timestamp": currentDate,
+        "fields": [
+          {
+            "name": "Visa Type",
+            "value": visaType ? visaType : "Not Available",
+            "inline": true
+          },
+          {
+            "name": "Appointment Type",
+            "value": appointmentType ? appointmentType : "Not Available",
+            "inline": true
+          },
+          {
+            "name": "Error Message",
+            "value": errorMessage,
+            "inline": false
+          },
+          {
+            "name": "Error correction Info",
+            "value": "```"+ errorResolveInfo + "````",
+            "inline": false
+          }
+          
+        ],
+        "footer": {
+          "text": `US Visa Slot Notify | v${version} | `
+        }
+      }
+    ]
+  }
+
+  return message;
+}
 
 // Send message to Discord Webhooks
 sendMessageToDiscord = async (message, webhookURL) => {
