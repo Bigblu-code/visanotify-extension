@@ -24,7 +24,8 @@ window.onload = async () => {
     chrome.storage.local.get(
       [
         "visaType",
-        "appointmentType",
+        "appointmentType_ofc",
+        "appointmentType_consular",
         "location_OFC",
         "location_consular",
         "date_OFC",
@@ -36,9 +37,8 @@ window.onload = async () => {
         document.getElementById("visaType").innerHTML = result.visaType;
         }
         if (
-          result.appointmentType !== undefined &&
           result.location_OFC !== undefined && 
-          result.appointmentType == "OFC"
+          result.appointmentType_ofc == "OFC"
         ) {
           if (result.date_OFC !== null ) {
             c = result.date_OFC.length;
@@ -61,9 +61,8 @@ window.onload = async () => {
         }
 
         if (
-          result.appointmentType !== undefined &&
           result.location_consular !== undefined &&
-          result.appointmentType == "CONSULAR"
+          result.appointmentType_consular == "CONSULAR"
         ) {
           if (result.date_consular !== null) {
             c = result.date_consular.length;
@@ -77,10 +76,10 @@ window.onload = async () => {
               dispList.push(month + " " + year);
             }
 
-            document.getElementById("visaConsulatePlaceDate").innerHTML =
+            document.getElementById("visaConsularPlaceDate").innerHTML =
               result.location_consular + " " + dispList;
           } else {
-            document.getElementById("visaConsulatePlaceDate").innerHTML =
+            document.getElementById("visaConsularPlaceDate").innerHTML =
               result.location_consular + "--" + " NO DATE AVAILABLE";
           }
         }

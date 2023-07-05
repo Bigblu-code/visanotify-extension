@@ -31,20 +31,10 @@ window.onload = () => {
   };
 
   scrapContent = () => {
-    // extraction visa type
-    // var visaType = document.getElementsByClassName("stylizedLabel")[5];
-    // if (visaType) {
-    //   visaType = visaType.textContent;
-    // }
-
-    // extract appointment type
-    // var appointmentType = document.getElementsByTagName("h3")[1];
-    // if(appointmentType){
-    // appointmentType = appointmentType.textContent;
-    // }
-
+    
+    // Extraction visa type
     const visaTypes = ["B1/B2", "B1", "B2", "C1/D", "J-1", "J-2", "F-1", "F-2", "M-1", "M-2", "L-1 (Blanket)", "H-1B", "H-2A", "H-3B", "H-3", "H-4", "L-1 (Individual)", "L-2 (Blanket)", "L-2 (Individual)", "O-1", "O-2", "O-3", "P-1", "P-2", "P-3", "P-4", "Q-1", "R-1", "R-2"];
-    let visaType = ""
+    let visaType;
     let found = false;
     let currentURL = window.location.toString().toLowerCase();
     if (currentURL && currentURL.indexOf("/applicanthome") > -1) {
@@ -59,28 +49,35 @@ window.onload = () => {
         }
       }
     }
-    // if (!found) {
-    //   const visaType = document.getElementsByClassName("stylizedLabel")[5];
-    //   if (visaType) {
-    //     visaType = visaType.textContent;
-    //   }
-    // }
 
-
-    appointmentType = ""
+    
+    let appointmentType;
     if (currentURL && currentURL.indexOf("/scheduleappointment") > -1) {
-      console.log(currentURL)
-
       // extract appointment Type
-      let dashboard = document.getElementById("dashboard");
-      appointmentType = dashboard?.textContent?.indexOf("Consular") > -1 ? "CONSULAR" : dashboard?.textContent?.indexOf("OFC") > -1 ? "OFC" : document.getElementsByTagName("h3")[1];
+      let dashboard = document.getElementById("dashboard").getElementsByTagName("h3")[0];
+      let dashboardText = dashboard.textContent
 
+
+      if (dashboard && dashboard.textContent) {
+
+        if (dashboardText.includes("Consular")) {
+          appointmentType = "CONSULAR";
+        } else if (dashboardText.includes("OFC")) {
+          appointmentType = "OFC";
+        } else { 
+            appointmentType = "Unknown";
+          }
+        } else {
+        appointmentType = "Unknown";
+      }
+
+      
       // extract city Mumbai, Delhi, Kolkata, Hydrabad
       var city = document.getElementsByTagName("select")[0];
       if (city) {
         city = city.options[city.selectedIndex].textContent;
       }
-
+      
       // extract date
       var datePicker = document.getElementById("datepicker");
       if (datePicker) {
@@ -96,28 +93,36 @@ window.onload = () => {
       };
     } else if (appointmentType === "OFC") {
       message = {
-        appointmentType: appointmentType,
+        appointmentType_ofc: appointmentType,
         location_OFC: city,
         date_OFC: datePicker,
         currentURL: currentURL
-
       };
     } else if (appointmentType === "CONSULAR") {
       message = {
-        appointmentType: appointmentType,
+        appointmentType_consular: appointmentType,
         location_consular: city,
         date_consular: datePicker,
         currentURL: currentURL
       };
-    } else {
+    } else if (appointmentType === "Unknown") {
       message = {
-        error: "Error found Or visiting another route  (other than applicanthome or scheduled appointment)",
+        appointmentType_unknown: appointmentType,
+        location_other: city,
+        date_other: datePicker,
         currentURL: currentURL
       };
+    } else {
+      message = {
+        currentURL: currentURL
+      }
     }
 
+    console.log("Extract Data: ")
+    console.log(message)
+
     // send message to background.js
-    return message;
+    return message
   };
 
   // listen for message from background.js

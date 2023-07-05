@@ -1,20 +1,21 @@
+const version = 0.1
+const URL = "https://portal.ustraveldocs.com/*";
+
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  const URL =
-    "https://portal.ustraveldocs.com/*";
 
 
-  const webhookURL_F1_Consular = ""
-  const webhookURL_F1_OFC = ""
-
-  const webhookURL_other_OFC = ""
-  const webhookURL_other_Consular = ""
-
-  const webhookURL_B1_OFC = ""
-  const webhookURL_B1_Consular = ""
-  const webhookURL_B2_OFC = ""
-  const webhookURL_B2_Consular = ""
-
-  const webhookURL_errorLog = ""
+    const webhookURL_F1_OFC           = ""
+    const webhookURL_F1_Consular      = ""
+        
+    const webhookURL_other_OFC        = ""
+    const webhookURL_other_Consular   = ""
+    
+    const webhookURL_B1_OFC           = ""
+    const webhookURL_B1_Consular      = ""
+    const webhookURL_B2_OFC           = ""
+    const webhookURL_B2_Consular      = ""
+    
+    const webhookURL_errorLog         = ""
 
 
   if (changeInfo.status === "complete" && tab.url.match(URL)) {
@@ -25,7 +26,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
       // set the data to local storage
       chrome.storage.local.set({ visaType: request.visaType });
-      chrome.storage.local.set({ appointmentType: request.appointmentType });
+      chrome.storage.local.set({ appointmentType_ofc: request.appointmentType_ofc });
+      chrome.storage.local.set({ appointmentType_consular: request.appointmentType_consular });
+      chrome.storage.local.set({ appointmentType_other: request.appointmentType_other });
 
       // set data to local for OFC
       chrome.storage.local.set({ location_OFC: request.location_OFC });
@@ -36,8 +39,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       chrome.storage.local.set({ date_consular: request.date_consular });
 
       // set data to local for other
-      chrome.storage.local.set({ visaType_other: request.visaType_other })
-      chrome.storage.local.set({ error: request.error })
+      chrome.storage.local.set({ location: request.location_other })
+      chrome.storage.local.set({ date: request.date_other })
 
       chrome.storage.local.set({ currentURL: request.currentURL })
 
@@ -47,21 +50,28 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       // get visa type from local storage
       chrome.storage.local.get().then((result) => {
 
+        console.log("get from storage: ")
+        console.info(result)
+
         // VISA TYPE ==> F-1
         if (result.visaType === 'F-1') {
 
-          // send message for OFC
-          if (request.appointmentType === "OFC" && request.location_OFC) {
+          if (request.appointmentType_ofc === "OFC" && request.location_OFC) {
 
-            var message = messageContent(result.visaType, request.appointmentType, request.location_OFC, request.date_OFC)
+            var message = messageContent(result.visaType, request.appointmentType_ofc, request.location_OFC, request.date_OFC)
             sendMessageToDiscord(message, webhookURL_F1_OFC);
-          } else if (request.appointmentType === "CONSULAR" && request.location_consular) {
 
-            var message = messageContent(result.visaType, request.appointmentType, request.location_consular, request.date_consular)
+          } else if (request.appointmentType_consular === "CONSULAR" && request.location_consular) {
+
+            var message = messageContent(result.visaType, request.appointmentType_consular, request.location_consular, request.date_consular)
             sendMessageToDiscord(message, webhookURL_F1_Consular);
+
           } else {
-            if (result.currentURL.indexOf("/scheduleappointment") > -1) {
-              sendMessageToDiscord({ "content": "Appointment Type Not Identified == " + result.currentURL }, webhookURL_errorLog);
+            if (result.currentURL.indexOf("/scheduleappointment") > -1 && request.appointmentType_consular != "CONSULAR" && request.appointmentType_ofc !== "OFC") {
+              
+              var message = errorMesssageContent(result.visaType, request.appointmentType_other, request.location, request.date, " Appointment Type Unknown ", result.currentURL)
+              sendMessageToDiscord(message, webhookURL_errorLog);
+              
             }
           }
 
@@ -70,13 +80,20 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         else if (result.visaType == null) {
 
 
-          if (request.appointmentType === "OFC" && request.location_OFC) {
-            var message = errorMesssageContent(result.visaType, request.appointmentType, request.location_OFC, request.date_OFC, " Visa Type Not found ", result.currentURL)
-          } else if (request.appointmentType === "CONSULAR" && request.location_consular) {
-            var message = errorMesssageContent(result.visaType, request.appointmentType, request.location_consular, request.date_consular, " Visa Type Not found ", result.currentURL)
+          if (request.appointmentType_ofc === "OFC" && request.location_OFC) {
+
+            var message = errorMesssageContent(result.visaType, request.appointmentType_ofc, request.location_OFC, request.date_OFC, " Visa Type Not found ", result.currentURL)
+          
+          } else if (request.appointmentType_consular === "CONSULAR" && request.location_consular) {
+            
+            var message = errorMesssageContent(result.visaType, request.appointmentType_consular, request.location_consular, request.date_consular, " Visa Type Not found ", result.currentURL)
+          
           } else {
-            if (result.location_OFC != null && result.location_consular != null) {
-              sendMessageToDiscord({ "content": "Appointment Type Not Identified == " + result.currentURL }, webhookURL_errorLog);
+
+            if (result.currentURL.indexOf("/scheduleappointment") > -1 && request.appointmentType_consular != "CONSULAR" && request.appointmentType_ofc !== "OFC") {
+              
+              var message = errorMesssageContent(result.visaType, request.appointmentType_other, request.location, request.date, " Appointment Type and Visa Type Unknown ", result.currentURL)
+              
             }
           }
 
@@ -88,21 +105,23 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         else {
 
           // send message for OFC
-          if (request.appointmentType === "OFC" && request.location_OFC) {
+          if (request.appointmentType_ofc === "OFC" && request.location_OFC) {
 
-            var message = messageContent(result.visaType, request.appointmentType, request.location_OFC, request.date_OFC)
+            var message = messageContent(result.visaType, request.appointmentType_ofc, request.location_OFC, request.date_OFC)
             sendMessageToDiscord(message, webhookURL_other_OFC);
 
-          } else if (request.appointmentType === "CONSULAR" && request.location_consular) {
+          } else if (request.appointmentType_consular === "CONSULAR" && request.location_consular) {
 
-            var message = messageContent(result.visaType, request.appointmentType, request.location_consular, request.date_consular)
+            var message = messageContent(result.visaType, request.appointmentType_consular, request.location_consular, request.date_consular)
             sendMessageToDiscord(message, webhookURL_other_Consular);
 
           } else {
 
-            if (result.currentURL.indexOf("/scheduleappointment") > -1) {
-              sendMessageToDiscord({ "content": "- Appointment Type Not Identified ==" + result.currentURL }, webhookURL_errorLog);
-
+            if (result.currentURL.indexOf("/scheduleappointment") > -1 && request.appointmentType_consular != "CONSULAR" && request.appointmentType_ofc !== "OFC") {
+              
+              var message = errorMesssageContent(result.visaType, request.appointmentType_other, request.location, request.date, " Appointment Type Unknown ", result.currentURL)
+              sendMessageToDiscord(message, webhookURL_errorLog);
+              
             }
           }
 
@@ -156,7 +175,7 @@ messageContent = (visaType, appointmentType, location, date) => {
           }
         ],
         "footer": {
-          "text": "US Visa Slot Notify | "
+          "text": `US Visa Slot Notify | v${version} | `
         }
       }
     ],
@@ -185,7 +204,7 @@ errorMesssageContent = (visaType, appointmentType, location, date, errorMessage,
       {
         "title": "Error",
         "description": "Here are the details for your appointment:",
-        "color": 15152933,
+        "color": visaType ? appointmentType ? 16250624 : 9521408 : appointmentType ? 16250624 : 9521408,
         "timestamp": currentDate,
         "fields": [
           {
@@ -221,11 +240,10 @@ errorMesssageContent = (visaType, appointmentType, location, date, errorMessage,
 
         ],
         "footer": {
-          "text": "US Visa Slot Notify | "
+          "text": `US Visa Slot Notify | v${version} | `
         }
       }
-    ],
-    content: dateString !== "" ? ` @${visaType} | Slots Found ` : ""
+    ]
   }
 
   return message
