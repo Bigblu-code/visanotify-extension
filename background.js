@@ -6,15 +6,15 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
     const webhookURL_F1_OFC           = ""
     const webhookURL_F1_Consular      = ""
-    
+      
     const webhookURL_other_OFC        = ""
     const webhookURL_other_Consular   = ""
-
+  
     const webhookURL_B1_OFC           = ""
     const webhookURL_B1_Consular      = ""
     const webhookURL_B2_OFC           = ""
     const webhookURL_B2_Consular      = ""
-    
+      
     const webhookURL_errorLog         = ""
 
 
@@ -47,7 +47,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       // capture error
       chrome.storage.local.set({errorMessage: request.errorMessage})
       chrome.storage.local.set({errorResolveInfo: request.errorResolveInfo})
-
+      
       console.info("Getting Request: ")
       console.log(request);
 
@@ -73,8 +73,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
           } else {
             if (result.currentURL.indexOf("/scheduleappointment") > -1 && request.appointmentType_consular != "CONSULAR" && request.appointmentType_ofc !== "OFC") {
               
-              var message = errorMesssageContent(result.visaType, request.appointmentType_other, request.location, request.date, " Appointment Type Unknown ", result.currentURL)
+              var message = errorMesssageContent(result.visaType, result.appointmentType, result.location, result.date, " Appointment Type Unknown ", result.currentURL)
               sendMessageToDiscord(message, webhookURL_errorLog);
+              var ErrorInfo = errorInfoMessageContent(result.visaType, result.appointmentType, result.errorMessage, result.errorResolveInfo)
+              sendMessageToDiscord(ErrorInfo, webhookURL_errorLog);
               
             }
           }
@@ -94,9 +96,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
           
           } else {
 
-            if ((result.currentURL.indexOf("/scheduleappointment") > -1 || request.currentURL.indexOf("/applicanthome") > -1 ) && request.appointmentType_consular != "CONSULAR" && request.appointmentType_ofc !== "OFC") {
+            if (result.currentURL.indexOf("/scheduleappointment") > -1 && request.appointmentType_consular != "CONSULAR" && request.appointmentType_ofc !== "OFC") {
               
-              var message = errorMesssageContent(result.visaType, request.appointmentType_other, request.location, request.date, " Appointment Type and Visa Type Unknown ", result.currentURL)
+              var message = errorMesssageContent(result.visaType, result.appointmentType, result.location, result.date, " Appointment Type and Visa Type Unknown ", result.currentURL)
+              var ErrorInfo = errorInfoMessageContent(result.visaType, result.appointmentType, result.errorMessage, result.errorResolveInfo)
+              
+            }
+            
+            if (request.currentURL.indexOf("/applicanthome") > -1){
               var ErrorInfo = errorInfoMessageContent(result.visaType, result.appointmentType, result.errorMessage, result.errorResolveInfo)
               
             }
@@ -125,8 +132,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
             if (result.currentURL.indexOf("/scheduleappointment") > -1 && request.appointmentType_consular != "CONSULAR" && request.appointmentType_ofc !== "OFC") {
               
-              var message = errorMesssageContent(result.visaType, request.appointmentType_other, request.location, request.date, " Appointment Type Unknown ", result.currentURL)
+              var message = errorMesssageContent(result.visaType, result.appointmentType, result.location, result.date, " Appointment Type Unknown ", result.currentURL)
               sendMessageToDiscord(message, webhookURL_errorLog);
+              var ErrorInfo = errorInfoMessageContent(result.visaType, result.appointmentType, result.errorMessage, result.errorResolveInfo)
+              sendMessageToDiscord(ErrorInfo, webhookURL_errorLog);
               
             }
           }
@@ -266,7 +275,7 @@ errorInfoMessageContent = (visaType, appointmentType, errorMessage, errorResolve
       {
         "title": "Error Correction Info",
         "description": "Information to currect the above error",
-        "color": 3066993,
+        "color": 16777215,
         "timestamp": currentDate,
         "fields": [
           {
