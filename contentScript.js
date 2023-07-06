@@ -62,6 +62,13 @@ window.onload = () => {
         console.log(message)
 
         return message
+      } else{
+        message = {
+          visaType: visaType,
+          currentURL: currentURL
+        };
+
+        return message
       }
 
     }
@@ -81,10 +88,31 @@ window.onload = () => {
         } else if (dashboardText.includes("OFC")) {
           appointmentType = "OFC";
         } else {
+
+          let d = document.getElementById("dashboard")
+
           appointmentType = "Unknown";
+
+          message = {
+            errorMessage: "Appointment Type not found",
+            currentURL: currentURL,
+            errorResolveInfo: d.innerText
+          }
+
+          return message;
         }
       } else {
-        appointmentType = "Unknown";
+        let d = document.getElementById("dashboard")
+
+          appointmentType = "Unknown";
+
+          message = {
+            errorMessage: "Appointment Type not found",
+            currentURL: currentURL,
+            errorResolveInfo: d.innerText
+          }
+
+          return message;
       }
 
 
@@ -101,13 +129,8 @@ window.onload = () => {
       }
     }
 
-    // send message to background.js
-    if (visaType) {
-      message = {
-        visaType: visaType,
-        currentURL: currentURL
-      };
-    } else if (appointmentType === "OFC") {
+
+    if (appointmentType === "OFC") {
       message = {
         appointmentType_ofc: appointmentType,
         location_OFC: city,
@@ -119,13 +142,6 @@ window.onload = () => {
         appointmentType_consular: appointmentType,
         location_consular: city,
         date_consular: datePicker,
-        currentURL: currentURL
-      };
-    } else if (appointmentType === "Unknown") {
-      message = {
-        appointmentType_unknown: appointmentType,
-        location_other: city,
-        date_other: datePicker,
         currentURL: currentURL
       };
     } else {

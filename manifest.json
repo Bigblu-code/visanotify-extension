@@ -1,6 +1,6 @@
 {
   "name": "US Visa Slot Notifier",
-  "version": "1.134",
+  "version": "1.135",
   "description": "Notifies users on availability of US visa slots",
   "permissions": ["tabs", "storage"],
   "manifest_version": 3,
