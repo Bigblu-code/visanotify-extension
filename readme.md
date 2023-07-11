@@ -21,9 +21,9 @@ For Testing and DEMO you can view the folder `WEB`. This contains the html file 
 # **Currently Serving**
 
 **Business/Tourism and All Other Visas :**
-- [ ] B1
-- [ ] B1/B2
-- [ ] B2
+- [X] B1
+- [X] B1/B2
+- [X] B2
 
 **Crew :**
 - [ ] C1/D
@@ -42,7 +42,7 @@ For Testing and DEMO you can view the folder `WEB`. This contains the html file 
 - [ ] L-1 (Blanket)
 
 **Employment-based visas :**
-- [ ] H-1B
+- [X] H-1B
 - [ ] H-2A
 - [ ] H-3B
 - [ ] H-3

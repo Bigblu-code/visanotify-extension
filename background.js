@@ -4,19 +4,26 @@ const URL = "https://portal.ustraveldocs.com/*";
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 
-    const webhookURL_F1_OFC           = ""
-    const webhookURL_F1_Consular      = ""
+  const webhookURL_F1_OFC           = ""
+  const webhookURL_F1_Consular      = ""
       
-    const webhookURL_other_OFC        = ""
-    const webhookURL_other_Consular   = ""
+  const webhookURL_other_OFC        = ""
+  const webhookURL_other_Consular   = ""
   
-    const webhookURL_B1_OFC           = ""
-    const webhookURL_B1_Consular      = ""
-    const webhookURL_B2_OFC           = ""
-    const webhookURL_B2_Consular      = ""
+  const webhookURL_B1_OFC           = ""
+  const webhookURL_B1_Consular      = ""
+  
+  const webhookURL_B2_OFC           = ""
+  const webhookURL_B2_Consular      = ""
+  
+  const webhookURL_B1B2_OFC         = ""
+  const webhookURL_B1B2_Consular    = ""
+  
+  const webhookURL_H1B_OFC          = ""
+  const webhookURL_H1B_Consular     = ""
       
-    const webhookURL_errorLog         = ""
-
+  const webhookURL_errorLog         = ""
+  
 
   if (changeInfo.status === "complete" && tab.url.match(URL)) {
 
@@ -81,6 +88,102 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             }
           }
 
+        }
+        // VISA TYPE ==> B1
+         else if (result.visaType === 'B1') {
+
+          if (request.appointmentType_ofc === "OFC" && request.location_OFC) {
+
+            var message = messageContent(result.visaType, request.appointmentType_ofc, request.location_OFC, request.date_OFC)
+            sendMessageToDiscord(message, webhookURL_B1_OFC);
+
+          } else if (request.appointmentType_consular === "CONSULAR" && request.location_consular) {
+
+            var message = messageContent(result.visaType, request.appointmentType_consular, request.location_consular, request.date_consular)
+            sendMessageToDiscord(message, webhookURL_B1_Consular);
+
+          } else {
+            if (result.currentURL.indexOf("/scheduleappointment") > -1 && request.appointmentType_consular != "CONSULAR" && request.appointmentType_ofc !== "OFC") {
+              
+              var message = errorMesssageContent(result.visaType, result.appointmentType, result.location, result.date, " Appointment Type Unknown ", result.currentURL)
+              sendMessageToDiscord(message, webhookURL_errorLog);
+              var ErrorInfo = errorInfoMessageContent(result.visaType, result.appointmentType, result.errorMessage, result.errorResolveInfo)
+              sendMessageToDiscord(ErrorInfo, webhookURL_errorLog);
+              
+            }
+          }
+        }
+        // VISA TYPE ==> B2
+        else if (result.visaType === 'B2') {
+
+          if (request.appointmentType_ofc === "OFC" && request.location_OFC) {
+
+            var message = messageContent(result.visaType, request.appointmentType_ofc, request.location_OFC, request.date_OFC)
+            sendMessageToDiscord(message, webhookURL_B2_OFC);
+
+          } else if (request.appointmentType_consular === "CONSULAR" && request.location_consular) {
+
+            var message = messageContent(result.visaType, request.appointmentType_consular, request.location_consular, request.date_consular)
+            sendMessageToDiscord(message, webhookURL_B2_Consular);
+
+          } else {
+            if (result.currentURL.indexOf("/scheduleappointment") > -1 && request.appointmentType_consular != "CONSULAR" && request.appointmentType_ofc !== "OFC") {
+              
+              var message = errorMesssageContent(result.visaType, result.appointmentType, result.location, result.date, " Appointment Type Unknown ", result.currentURL)
+              sendMessageToDiscord(message, webhookURL_errorLog);
+              var ErrorInfo = errorInfoMessageContent(result.visaType, result.appointmentType, result.errorMessage, result.errorResolveInfo)
+              sendMessageToDiscord(ErrorInfo, webhookURL_errorLog);
+              
+            }
+          }
+        }
+        // VISA TYPE ==> B1/B2
+        else if (result.visaType === 'B1/B2') {
+
+          if (request.appointmentType_ofc === "OFC" && request.location_OFC) {
+
+            var message = messageContent(result.visaType, request.appointmentType_ofc, request.location_OFC, request.date_OFC)
+            sendMessageToDiscord(message, webhookURL_B1B2_OFC);
+
+          } else if (request.appointmentType_consular === "CONSULAR" && request.location_consular) {
+
+            var message = messageContent(result.visaType, request.appointmentType_consular, request.location_consular, request.date_consular)
+            sendMessageToDiscord(message, webhookURL_B1B2_Consular);
+
+          } else {
+            if (result.currentURL.indexOf("/scheduleappointment") > -1 && request.appointmentType_consular != "CONSULAR" && request.appointmentType_ofc !== "OFC") {
+              
+              var message = errorMesssageContent(result.visaType, result.appointmentType, result.location, result.date, " Appointment Type Unknown ", result.currentURL)
+              sendMessageToDiscord(message, webhookURL_errorLog);
+              var ErrorInfo = errorInfoMessageContent(result.visaType, result.appointmentType, result.errorMessage, result.errorResolveInfo)
+              sendMessageToDiscord(ErrorInfo, webhookURL_errorLog);
+              
+            }
+          }
+        }
+        // VISA TYPE ==> H-1B
+        else if (result.visaType === 'H-1B') {
+
+          if (request.appointmentType_ofc === "OFC" && request.location_OFC) {
+
+            var message = messageContent(result.visaType, request.appointmentType_ofc, request.location_OFC, request.date_OFC)
+            sendMessageToDiscord(message, webhookURL_H1B_OFC);
+
+          } else if (request.appointmentType_consular === "CONSULAR" && request.location_consular) {
+
+            var message = messageContent(result.visaType, request.appointmentType_consular, request.location_consular, request.date_consular)
+            sendMessageToDiscord(message, webhookURL_H1B_Consular);
+
+          } else {
+            if (result.currentURL.indexOf("/scheduleappointment") > -1 && request.appointmentType_consular != "CONSULAR" && request.appointmentType_ofc !== "OFC") {
+              
+              var message = errorMesssageContent(result.visaType, result.appointmentType, result.location, result.date, " Appointment Type Unknown ", result.currentURL)
+              sendMessageToDiscord(message, webhookURL_errorLog);
+              var ErrorInfo = errorInfoMessageContent(result.visaType, result.appointmentType, result.errorMessage, result.errorResolveInfo)
+              sendMessageToDiscord(ErrorInfo, webhookURL_errorLog);
+              
+            }
+          }
         }
         // VISA TYPE ==> NULL
         else if (result.visaType == null) {
